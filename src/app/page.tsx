@@ -35,7 +35,6 @@ interface Complaint {
   urgency: "NORMAL" | "HIGH" | "URGENT";
   status: ComplaintStatus;
   photoUrl?: string;
-  audioMemoUrl?: string;
   timeline: { stage: string; description: string; actor: string; timestamp: string }[];
   submittedAt: string;
 }
@@ -69,7 +68,6 @@ export default function PrajaConnectApp() {
   const [currentRole, setCurrentRole] = useState<Role>("CITIZEN");
   const [activeTab, setActiveTab] = useState<string>("landing");
   const [searchQuery, setSearchQuery] = useState("");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [complaints, setComplaints] = useState<Complaint[]>([
     {
@@ -128,14 +126,8 @@ export default function PrajaConnectApp() {
   const [cameraActive, setCameraActive] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const [feedbackTarget, setFeedbackTarget] = useState<Complaint | null>(null);
-  const [ratingVal, setRatingVal] = useState(5);
-
   const handleFetchGps = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser");
-      return;
-    }
+    if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       (pos) => setCoords({ lat: parseFloat(pos.coords.latitude.toFixed(5)), lng: parseFloat(pos.coords.longitude.toFixed(5)) }),
       () => setCoords({ lat: 17.2405, lng: 78.4298 }),
@@ -152,7 +144,7 @@ export default function PrajaConnectApp() {
         setCameraActive(true);
       }
     } catch {
-      alert("Camera unavailable or permission denied.");
+      alert("Camera unavailable.");
     }
   };
 
@@ -278,9 +270,6 @@ export default function PrajaConnectApp() {
             <button onClick={() => setActiveTab("report")} className={`px-3 py-1.5 rounded-lg transition ${activeTab === "report" ? "bg-orange-600 text-white font-semibold" : "text-slate-300 hover:text-white"}`}>+ Report Issue</button>
             <button onClick={() => setActiveTab("track")} className={`px-3 py-1.5 rounded-lg transition ${activeTab === "track" ? "bg-slate-800 text-orange-400 font-semibold" : "text-slate-300 hover:text-white"}`}>Track Status</button>
             <button onClick={() => setActiveTab("dashboard")} className={`px-3 py-1.5 rounded-lg transition ${activeTab === "dashboard" ? "bg-slate-800 text-orange-400 font-semibold" : "text-slate-300 hover:text-white"}`}>Public Stats</button>
-            <button onClick={() => setActiveTab("assistant")} className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition ${activeTab === "assistant" ? "bg-indigo-600 text-white font-semibold" : "text-slate-300 hover:text-white"}`}>
-              <Sparkles className="w-4 h-4 text-amber-300" /> Praja AI
-            </button>
           </div>
 
           <div className="flex items-center gap-3">
@@ -301,7 +290,6 @@ export default function PrajaConnectApp() {
               <option value="WARD_MEMBER">Ward Member</option>
               <option value="SARPANCH">Sarpanch / GP</option>
               <option value="OFFICER">Dept Officer</option>
-              <option value="ADMIN">Admin</option>
             </select>
           </div>
         </div>
@@ -631,18 +619,6 @@ export default function PrajaConnectApp() {
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {activeTab === "assistant" && (
-          <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-              <Sparkles className="w-6 h-6 text-indigo-600" />
-              <h2 className="text-lg font-bold text-slate-900">Praja AI Assistant</h2>
-            </div>
-            <p className="text-xs text-slate-600">
-              Welcome to Praja AI. Ask for guidance on selecting the right grievance category, tracking ticket timelines, or understanding village public service policies.
-            </p>
           </div>
         )}
       </main>
